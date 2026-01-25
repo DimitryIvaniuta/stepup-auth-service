@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: stepup-auth-service
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5454}/${DB_NAME:stepup}
+    username: ${DB_USER:stepup}
+    password: ${DB_PASSWORD:stepup}
+    hikari:
+      maximum-pool-size: 10
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6382}
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9097}
+    consumer:
+      group-id: stepup-auth-service
+      auto-offset-reset: earliest
+    producer:
+      acks: all
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        retries: 10
+        delivery.timeout.ms: 120000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+app:
+  security:
+    jwt:
+      issuer: stepup-auth-service
+      secret: ${JWT_SECRET:please-change-me-in-prod-very-long-secret-please-change}
+      ttl: 3600s
+
+  risk:
+    high-amount-threshold: 1000.00
+    step-up-score-threshold: 70
+    signals:
+      new-device-score: 50
+      new-country-score: 30
+      high-amount-score: 60
+
+  otp:
+    ttl: 300s
+    max-attempts: 5
+    dev-preview: ${OTP_DEV_PREVIEW:true}
+
+  outbox:
+    enabled: true
+    publish-interval: 2s
+    batch-size: 50
+
+  kafka:
+    topics:
+      monitoring: risk.monitoring
