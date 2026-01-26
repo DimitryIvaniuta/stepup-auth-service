@@ -75,6 +75,12 @@ app:
     topics:
       monitoring: risk.monitoring
 
+  web:
+    cors:
+      allow-credentials: false
+      allowed-origins:
+        - "http://localhost:5173"
+        - "http://localhost:3000"
 logging:
   level:
     root: INFO
@@ -91,3 +97,4 @@ logging:
 
   pattern:
     console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] [%X{requestId:-}] %logger{36} - %msg%n"
+

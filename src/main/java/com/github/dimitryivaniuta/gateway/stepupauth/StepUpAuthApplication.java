@@ -2,6 +2,7 @@ package com.github.dimitryivaniuta.gateway.stepupauth;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -9,6 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @EnableScheduling
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class StepUpAuthApplication {
     /** Boots the application. */
     public static void main(String[] args) {
