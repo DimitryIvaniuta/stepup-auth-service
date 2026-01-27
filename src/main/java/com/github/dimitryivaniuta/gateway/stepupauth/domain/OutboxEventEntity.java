@@ -1,6 +1,5 @@
 package com.github.dimitryivaniuta.gateway.stepupauth.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -28,8 +27,9 @@ public class OutboxEventEntity {
     @Column(name = "event_type", nullable = false, length = 100)
     private String eventType;
 
-//    @Column(name = "payload_json", nullable = false, columnDefinition = "jsonb")
-    /** Event payload as JSONB. */
+    /**
+     * Event payload as JSONB.
+     */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "payload_json", nullable = false, columnDefinition = "jsonb")
     private String payloadJson;
@@ -45,6 +45,9 @@ public class OutboxEventEntity {
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    @Column(name = "last_error")
+    private String lastError;
 
     @Column(name = "published_at")
     private Instant publishedAt;
