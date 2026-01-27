@@ -12,7 +12,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class StepUpAuthApplication {
-    /** Boots the application. */
+    /**
+     * Boots the application.
+     */
     public static void main(String[] args) {
         SpringApplication.run(StepUpAuthApplication.class, args);
     }
