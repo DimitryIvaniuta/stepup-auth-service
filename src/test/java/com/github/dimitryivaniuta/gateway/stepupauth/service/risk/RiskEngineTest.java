@@ -7,7 +7,9 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/** Unit tests for {@link RiskEngine}. */
+/**
+ * Unit tests for {@link RiskEngine}.
+ */
 class RiskEngineTest {
 
     @Test
