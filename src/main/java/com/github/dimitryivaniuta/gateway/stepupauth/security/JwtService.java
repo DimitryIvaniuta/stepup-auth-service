@@ -16,32 +16,42 @@ import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
-/** Issues and validates JWT tokens (HS256). */
+/**
+ * Issues and validates JWT tokens (HS256).
+ */
 @Service
 public class JwtService {
-    @Value("${app.security.jwt.issuer}") private String issuer;
-    @Value("${app.security.jwt.secret}") private String secret;
-    @Value("${app.security.jwt.ttl}") private Duration ttl;
+    @Value("${app.security.jwt.issuer}")
+    private String issuer;
+    @Value("${app.security.jwt.secret}")
+    private String secret;
+    @Value("${app.security.jwt.ttl}")
+    private Duration ttl;
     private SecretKey key;
 
-    @PostConstruct void init() {
+    @PostConstruct
+    void init() {
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    /** Issues JWT for user. */
-    public String issueToken(UUID userId, String username) {
+    /**
+     * Issues JWT for user.
+     */
+    public String issueToken(UUID userId, String username, java.util.List<String> roles) {
         Instant now = Instant.now();
         return Jwts.builder()
-            .setIssuer(issuer)
-            .setSubject(userId.toString())
-            .setIssuedAt(Date.from(now))
-            .setExpiration(Date.from(now.plus(ttl)))
-            .addClaims(Map.of("username", username))
-            .signWith(key, SignatureAlgorithm.HS256)
-            .compact();
+                .setIssuer(issuer)
+                .setSubject(userId.toString())
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(now.plus(ttl)))
+                .addClaims(Map.of("username", username, "roles", roles))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
     }
 
-    /** Parses JWT and returns principal. */
+    /**
+     * Parses JWT and returns principal.
+     */
     public JwtPrincipal parse(String token) {
         Claims claims = Jwts.parser()
                 .requireIssuer(issuer)
@@ -50,9 +60,19 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
 
-        return new JwtPrincipal(
-                UUID.fromString(claims.getSubject()),
-                (String) claims.get("username")
-        );
+        Object rawRoles = claims.get("roles");
+        java.util.List<String> roles;
+        if (rawRoles instanceof java.util.List<?> l) {
+            roles = l.stream().map(String::valueOf).toList();
+        } else if (rawRoles instanceof String s) {
+            roles = java.util.Arrays.stream(s.split(","))
+                    .map(String::trim)
+                    .filter(x -> !x.isBlank())
+                    .toList();
+        } else {
+            roles = java.util.List.of("USER");
+        }
+
+        return new JwtPrincipal(UUID.fromString(claims.getSubject()), (String) claims.get("username"), roles);
     }
 }
