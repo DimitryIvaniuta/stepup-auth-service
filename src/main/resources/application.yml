@@ -68,7 +68,7 @@ app:
 
   outbox:
     enabled: true
-    publish-interval: 2s
+    publish-interval: 5s
     batch-size: 50
 
   kafka:
@@ -89,12 +89,14 @@ logging:
     org.springframework.security: INFO
 
     # Hibernate SQL + bound params (dev only, can leak secrets!)
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.SQL: WARN
+    org.hibernate.orm.jdbc.bind: WARN
+    org.hibernate.orm.jdbc.extract: WARN
 
     # your app
     com.github.dimitryivaniuta.gateway: DEBUG
 
   pattern:
-    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] [%X{requestId:-}] %logger{36} - %msg%n"
+
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] [%X{X-Request-Id:-}] %logger{36} - %msg%n%ex{full}"
 

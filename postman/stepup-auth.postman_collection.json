@@ -20,6 +20,11 @@
     {
       "key": "otp",
       "value": ""
+    },
+    {
+      "key": "outboxId",
+      "value": "1",
+      "type": "string"
     }
   ],
   "item": [
@@ -212,6 +217,158 @@
           "raw": "{\n  \"otp\": \"{{otp}}\"\n}"
         }
       }
+    },
+    {
+      "name": "My Risk Decisions (requires token)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/me/risk-decisions",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "me",
+            "risk-decisions"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Admin (requires admin user)",
+      "item": [
+        {
+          "name": "Admin - Risk Decisions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/risk-decisions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "risk-decisions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin - StepUp Challenges",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/stepup-challenges",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "stepup-challenges"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin - Outbox",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/outbox",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "outbox"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin - Retry Outbox (set outboxId first)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/outbox/{{outboxId}}/retry",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "outbox",
+                "{{outboxId}}",
+                "retry"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Admin - Monitoring Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/monitoring/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "monitoring",
+                "events"
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

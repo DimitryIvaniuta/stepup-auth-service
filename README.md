@@ -34,3 +34,31 @@ Integration tests use Testcontainers (Docker required):
 ```bash
 gradle test
 ```
+
+
+## Admin endpoints
+Admin endpoints are protected by an allowlist:
+- `app.security.admin.usernames: ["admin"]`
+Create a user with username `admin` (register) and then login to access `/api/admin/**`.
+
+
+## Admin security (role/claim-based)
+
+Admin endpoints (`/api/admin/**`) require **ROLE_ADMIN**.
+The service uses a lightweight JWT with a `roles` claim (e.g. `["USER","ADMIN"]`) which is mapped to Spring Security authorities.
+
+**Demo bootstrap:** registering username `admin` automatically assigns roles `USER,ADMIN`.
+In a real system, roles would come from RBAC tables or an external IdP (OIDC).
+
+---
+
+## 📜 License
+
+MIT
+
+---
+
+## Contact
+
+**Dimitry Ivaniuta** — [dzmitry.ivaniuta.services@gmail.com](mailto:dzmitry.ivaniuta.services@gmail.com) — [GitHub](https://github.com/DimitryIvaniuta)
+
