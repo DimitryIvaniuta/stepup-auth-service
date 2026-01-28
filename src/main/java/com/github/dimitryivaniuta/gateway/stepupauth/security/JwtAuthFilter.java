@@ -20,14 +20,15 @@ import java.util.List;
  * <p>Responsibilities:</p>
  * <ul>
  *   <li>Parse {@code Authorization: Bearer ...}</li>
- *   <li>Create an {@link org.springframework.security.core.Authentication} with authorities derived from JWT claim {@code roles}</li>
- *   <li>Keep the application stateless (no sessions)</li>
+ *   <li>Create Authentication with authorities derived from JWT {@code roles}</li>
  * </ul>
  *
  * <p>Roles are mapped to Spring authorities using the standard {@code ROLE_} prefix.</p>
  */
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
+
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtService jwtService;
 
@@ -37,19 +38,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
 
-        String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (auth != null && auth.startsWith("Bearer ")) {
-            try {
-                JwtPrincipal p = jwtService.parse(auth.substring("Bearer ".length()));
-                List<SimpleGrantedAuthority> authorities = toAuthorities(p);
+        // Don’t override if someone already authenticated earlier in the chain.
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-                var a = new UsernamePasswordAuthenticationToken(p, null, authorities);
-                SecurityContextHolder.getContext().setAuthentication(a);
-            } catch (Exception ignored) {
-                // Invalid token -> act as anonymous. Controllers will return 401/403 via security config.
-                SecurityContextHolder.clearContext();
+            if (auth != null && auth.startsWith(BEARER_PREFIX)) {
+                String token = auth.substring(BEARER_PREFIX.length()).trim();
+                if (!token.isEmpty()) {
+                    try {
+                        JwtPrincipal principal = jwtService.parse(token);
+                        List<SimpleGrantedAuthority> authorities = toAuthorities(principal);
+
+                        var authentication = new UsernamePasswordAuthenticationToken(principal, null, authorities);
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    } catch (Exception ex) {
+                        // Invalid token -> treat as anonymous.
+                        SecurityContextHolder.clearContext();
+                    }
+                }
             }
         }
 
@@ -57,17 +65,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private static List<SimpleGrantedAuthority> toAuthorities(JwtPrincipal p) {
-        if (p == null || p.roles() == null || p.roles().isEmpty()) {
+        List<String> roles = (p == null) ? null : p.roles();
+        if (roles == null || roles.isEmpty()) {
             return List.of(new SimpleGrantedAuthority("ROLE_USER"));
         }
 
-        return p.roles().stream()
-            .map(String::trim)
-            .filter(r -> !r.isBlank())
-            .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r)
-            .distinct()
-            .map(SimpleGrantedAuthority::new)
-            .toList();
+        return roles.stream()
+                .map(String::trim)
+                .filter(r -> !r.isBlank())
+                .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r)
+                .distinct()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
     }
 
     @Override
