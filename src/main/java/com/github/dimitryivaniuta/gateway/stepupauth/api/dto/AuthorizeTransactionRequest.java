@@ -6,6 +6,10 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
-/** Authorization request for risky action. */
-public record AuthorizeTransactionRequest(@NotBlank String actionType,
-                                          @NotNull @DecimalMin("0.00") BigDecimal amount) { }
+/**
+ * Authorization request for risky action.
+ */
+public record AuthorizeTransactionRequest(
+        @NotBlank String actionType,
+        @NotNull @DecimalMin("0.00") BigDecimal amount) {
+}

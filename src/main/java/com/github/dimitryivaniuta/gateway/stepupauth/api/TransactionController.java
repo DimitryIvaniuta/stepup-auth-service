@@ -7,17 +7,22 @@ import com.github.dimitryivaniuta.gateway.stepupauth.service.decision.RiskDecisi
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
-/** Risky action authorization endpoint. */
+/**
+ * Risky action authorization endpoint.
+ */
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {
     private final RiskDecisionService decisions;
-    public TransactionController(RiskDecisionService decisions) { this.decisions = decisions; }
+
+    public TransactionController(RiskDecisionService decisions) {
+        this.decisions = decisions;
+    }
 
     @PostMapping("/authorize")
     public AuthorizeTransactionResponse authorize(@RequestHeader("X-Device-Id") String deviceId,
-                                                 @RequestHeader("X-Country") String country,
-                                                 @Valid @RequestBody AuthorizeTransactionRequest req) {
+                                                  @RequestHeader("X-Country") String country,
+                                                  @Valid @RequestBody AuthorizeTransactionRequest req) {
         return decisions.authorize(CurrentUser.userId().orElseThrow(), deviceId, country, req);
     }
 }
